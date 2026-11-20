@@ -1,0 +1,19 @@
+@* Flash messages: TempData survives exactly one redirect (Session 03). *@
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="container">
+        <div id="Alert" class="alert alert-success alert-dismissible fade show mt-3">
+            <i class="bi bi-check-circle-fill me-2"></i> @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+else if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="container">
+        <div id="Alert" class="alert alert-danger alert-dismissible fade show mt-3">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
