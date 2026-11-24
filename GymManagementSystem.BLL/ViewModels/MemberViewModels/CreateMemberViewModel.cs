@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using GymManagementSystem.DAL.Entities.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace GymManagementSystem.BLL.ViewModels.MemberViewModels;
 
@@ -41,6 +42,9 @@ public class CreateMemberViewModel
     [StringLength(150, MinimumLength = 2, ErrorMessage = "Street must be between 2 and 150 characters")]
     [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Street can only contain letters, numbers, and spaces")]
     public string Street { get; set; } = default!;
+
+    [Required(ErrorMessage = "Photo is required")]
+    public IFormFile Photo { get; set; } = default!;
 
     [Required(ErrorMessage = "Health record is required")]
     public HealthRecordViewModel HealthRecordViewModel { get; set; } = default!;

@@ -28,13 +28,18 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
                     <ul class="navbar-nav m-auto mb-2 mb-lg-0 mt-3 mt-lg-0">
                         <li class="nav-item">
                             <a class="nav-link @Active("Home") px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @Active("Members") px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Members" asp-action="Index">Members</a>
-                        </li>
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @Active("Members") px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Members" asp-action="Index">Members</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link @Active("Trainers") px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Trainers" asp-action="Index">Trainers</a>
                         </li>
@@ -45,6 +50,10 @@
                             <a class="nav-link @Active("Plans") px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Plans" asp-action="Index">Plans</a>
                         </li>
                     </ul>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-flex ms-lg-3">
+                        <button type="submit" class="btn btn-outline"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+                    </form>
+                    }
                 </div>
             </div>
         </nav>
@@ -58,7 +67,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
-        // Flash messages fade out by themselves.
         document.addEventListener("DOMContentLoaded", function () {
             const alertBox = document.getElementById("Alert");
             if (alertBox) {

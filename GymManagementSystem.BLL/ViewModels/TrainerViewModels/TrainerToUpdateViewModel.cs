@@ -5,7 +5,6 @@ namespace GymManagementSystem.BLL.ViewModels.TrainerViewModels;
 
 public class TrainerToUpdateViewModel
 {
-    // Display only (locked after registration).
     public string? Name { get; set; }
 
     [Required(ErrorMessage = "Email Is Required")]

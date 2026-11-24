@@ -4,7 +4,6 @@ namespace GymManagementSystem.BLL.ViewModels.PlanViewModels;
 
 public class UpdatePlanViewModel
 {
-    // Display only: the service rejects any change to the name.
     public string? PlanName { get; set; }
 
     [Required(ErrorMessage = "Description is required")]

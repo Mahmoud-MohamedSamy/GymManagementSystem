@@ -1,10 +1,11 @@
 using System.Reflection;
 using GymManagementSystem.DAL.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementSystem.DAL.Data;
 
-public class GymDbContext : DbContext
+public class GymDbContext : IdentityDbContext<ApplicationUser>
 {
     public GymDbContext(DbContextOptions<GymDbContext> options) : base(options)
     {

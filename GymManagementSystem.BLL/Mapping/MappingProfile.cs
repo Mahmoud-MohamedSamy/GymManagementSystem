@@ -27,6 +27,7 @@ public class MappingProfile : Profile
                 s.Address.BuildingNumber.ToString() + ", " + s.Address.Street + ", " + s.Address.City));
 
         CreateMap<CreateMemberViewModel, Member>()
+            .ForMember(d => d.Photo, o => o.Ignore())
             .ForMember(d => d.Address, o => o.MapFrom(s => new Address
             {
                 BuildingNumber = s.BuildingNumber,

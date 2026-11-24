@@ -1,25 +1,27 @@
+using GymManagementSystem.BLL.Common;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.PL.Controllers;
 
+[Authorize(Roles = "SuperAdmin")]
 public class MembersController : Controller
 {
     private readonly IMemberService _memberService;
+    private readonly IAttachmentService _attachmentService;
 
-    public MembersController(IMemberService memberService)
+    public MembersController(IMemberService memberService, IAttachmentService attachmentService)
     {
         _memberService = memberService;
+        _attachmentService = attachmentService;
     }
 
-    // GET /Members
     public IActionResult Index() => View(_memberService.GetAllMembers());
 
-    // GET /Members/Create
     public IActionResult Create() => View();
 
-    // POST /Members/CreateMember
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult CreateMember(CreateMemberViewModel createMember)
@@ -27,18 +29,27 @@ public class MembersController : Controller
         if (!ModelState.IsValid)
             return View(nameof(Create), createMember);
 
-        if (_memberService.CreateMember(createMember))
+        var result = _memberService.CreateMember(createMember);
+        if (result.IsSuccess)
         {
             TempData["SuccessMessage"] = "Member Created Successfully";
             return RedirectToAction(nameof(Index));
         }
 
-        ModelState.AddModelError(string.Empty,
-            "Member failed to create. The email or phone number may already be in use.");
+        ModelState.AddModelError(string.Empty, result.Error!);
         return View(nameof(Create), createMember);
     }
 
-    // GET /Members/MemberDetails/5
+    [HttpGet]
+    public IActionResult Picture(string fileName)
+    {
+        var result = _attachmentService.GetFile(fileName, AttachmentFolders.Members);
+        if (!result.IsSuccess)
+            return NotFound();
+
+        return File(result.Value!.Content, result.Value.ContentType);
+    }
+
     public IActionResult MemberDetails(int id)
     {
         var member = _memberService.GetMemberDetails(id);
@@ -47,7 +58,6 @@ public class MembersController : Controller
         return View(member);
     }
 
-    // GET /Members/HealthRecordDetails/5
     public IActionResult HealthRecordDetails(int id)
     {
         var healthRecord = _memberService.GetMemberHealthRecordDetails(id);
@@ -56,7 +66,6 @@ public class MembersController : Controller
         return View(healthRecord);
     }
 
-    // GET /Members/EditMember/5
     public IActionResult EditMember(int id)
     {
         var member = _memberService.GetMemberToUpdate(id);
@@ -65,7 +74,6 @@ public class MembersController : Controller
         return View(member);
     }
 
-    // POST /Members/EditMember/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult EditMember(int id, MemberToUpdateViewModel memberToUpdate)
@@ -84,7 +92,6 @@ public class MembersController : Controller
         return View(memberToUpdate);
     }
 
-    // GET /Members/Delete/5  (confirmation page)
     public IActionResult Delete(int id)
     {
         if (_memberService.GetMemberToUpdate(id) is null) return MemberNotFound();
@@ -92,7 +99,6 @@ public class MembersController : Controller
         return View();
     }
 
-    // POST /Members/DeleteConfirmed/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)

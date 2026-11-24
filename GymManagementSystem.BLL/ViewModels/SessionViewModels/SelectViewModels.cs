@@ -1,6 +1,5 @@
 namespace GymManagementSystem.BLL.ViewModels.SessionViewModels;
 
-// Feeds the Trainer / Category dropdowns.
 public class TrainerSelectViewModel
 {
     public int Id { get; set; }

@@ -1,9 +1,11 @@
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.TrainerViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.PL.Controllers;
 
+[Authorize]
 public class TrainersController : Controller
 {
     private readonly ITrainerService _trainerService;
@@ -13,13 +15,10 @@ public class TrainersController : Controller
         _trainerService = trainerService;
     }
 
-    // GET /Trainers
     public IActionResult Index() => View(_trainerService.GetAllTrainers());
 
-    // GET /Trainers/Create
     public IActionResult Create() => View();
 
-    // POST /Trainers/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Create(CreateTrainerViewModel createTrainer)
@@ -38,7 +37,6 @@ public class TrainersController : Controller
         return View(createTrainer);
     }
 
-    // GET /Trainers/Details/5
     public IActionResult Details(int id)
     {
         var trainer = _trainerService.GetTrainerDetails(id);
@@ -47,7 +45,6 @@ public class TrainersController : Controller
         return View(trainer);
     }
 
-    // GET /Trainers/Edit/5
     public IActionResult Edit(int id)
     {
         var trainer = _trainerService.GetTrainerToUpdate(id);
@@ -56,7 +53,6 @@ public class TrainersController : Controller
         return View(trainer);
     }
 
-    // POST /Trainers/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Edit(int id, TrainerToUpdateViewModel trainerToUpdate)
@@ -75,7 +71,6 @@ public class TrainersController : Controller
         return View(trainerToUpdate);
     }
 
-    // GET /Trainers/Delete/5  (confirmation page)
     public IActionResult Delete(int id)
     {
         if (_trainerService.GetTrainerToUpdate(id) is null) return TrainerNotFound();
@@ -83,7 +78,6 @@ public class TrainersController : Controller
         return View();
     }
 
-    // POST /Trainers/DeleteConfirmed/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)

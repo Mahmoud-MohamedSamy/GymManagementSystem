@@ -1,9 +1,11 @@
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.PlanViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagementSystem.PL.Controllers;
 
+[Authorize]
 public class PlansController : Controller
 {
     private readonly IPlanService _planService;
@@ -13,10 +15,8 @@ public class PlansController : Controller
         _planService = planService;
     }
 
-    // GET /Plans
     public IActionResult Index() => View(_planService.GetAllPlans());
 
-    // GET /Plans/Details/1
     public IActionResult Details(int id)
     {
         var plan = _planService.GetPlanDetails(id);
@@ -25,7 +25,6 @@ public class PlansController : Controller
         return View(plan);
     }
 
-    // GET /Plans/Edit/1
     public IActionResult Edit(int id)
     {
         var plan = _planService.GetPlanToUpdate(id);
@@ -38,7 +37,6 @@ public class PlansController : Controller
         return View(plan);
     }
 
-    // POST /Plans/Edit/1
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Edit(int id, UpdatePlanViewModel planToUpdate)
@@ -57,7 +55,6 @@ public class PlansController : Controller
         return View(planToUpdate);
     }
 
-    // POST /Plans/Activate/1  (toggles IsActive - plans are never hard-deleted)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Activate(int id)

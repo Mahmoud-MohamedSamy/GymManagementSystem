@@ -1,6 +1,5 @@
 namespace GymManagementSystem.BLL.ViewModels.MemberViewModels;
 
-// Index list row.
 public class MemberViewModel
 {
     public int Id { get; set; }
@@ -11,7 +10,6 @@ public class MemberViewModel
     public string Gender { get; set; } = null!;
 }
 
-// Details page: adds related Plan / Membership data.
 public class MemberDetailsViewModel : MemberViewModel
 {
     public string DateOfBirth { get; set; } = null!;

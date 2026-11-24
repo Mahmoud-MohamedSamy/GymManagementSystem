@@ -1,10 +1,12 @@
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.SessionViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymManagementSystem.PL.Controllers;
 
+[Authorize]
 public class SessionsController : Controller
 {
     private readonly ISessionService _sessionService;
@@ -14,10 +16,8 @@ public class SessionsController : Controller
         _sessionService = sessionService;
     }
 
-    // GET /Sessions
     public IActionResult Index() => View(_sessionService.GetAllSessions());
 
-    // GET /Sessions/Details/5
     public IActionResult Details(int id)
     {
         var result = _sessionService.GetSessionById(id);
@@ -26,14 +26,12 @@ public class SessionsController : Controller
         return View(result.Value);
     }
 
-    // GET /Sessions/Create
     public IActionResult Create()
     {
         LoadDropDowns();
         return View();
     }
 
-    // POST /Sessions/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Create(CreateSessionViewModel createSession)
@@ -56,7 +54,6 @@ public class SessionsController : Controller
         return View(createSession);
     }
 
-    // GET /Sessions/Edit/5
     public IActionResult Edit(int id)
     {
         var result = _sessionService.GetSessionToUpdate(id);
@@ -66,7 +63,6 @@ public class SessionsController : Controller
         return View(result.Value);
     }
 
-    // POST /Sessions/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Edit(int id, UpdateSessionViewModel updateSession)
@@ -89,7 +85,6 @@ public class SessionsController : Controller
         return View(updateSession);
     }
 
-    // GET /Sessions/Delete/5  (confirmation page)
     public IActionResult Delete(int id)
     {
         var result = _sessionService.GetSessionById(id);
@@ -98,7 +93,6 @@ public class SessionsController : Controller
         return View();
     }
 
-    // POST /Sessions/DeleteConfirmed/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult DeleteConfirmed(int id)

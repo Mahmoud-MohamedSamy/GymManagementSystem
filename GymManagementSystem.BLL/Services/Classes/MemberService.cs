@@ -1,4 +1,5 @@
 using AutoMapper;
+using GymManagementSystem.BLL.Common;
 using GymManagementSystem.BLL.Services.Interfaces;
 using GymManagementSystem.BLL.ViewModels.MemberViewModels;
 using GymManagementSystem.DAL.Entities;
@@ -10,11 +11,13 @@ public class MemberService : IMemberService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IAttachmentService _attachmentService;
 
-    public MemberService(IUnitOfWork unitOfWork, IMapper mapper)
+    public MemberService(IUnitOfWork unitOfWork, IMapper mapper, IAttachmentService attachmentService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _attachmentService = attachmentService;
     }
 
     public IEnumerable<MemberViewModel> GetAllMembers()
@@ -23,25 +26,34 @@ public class MemberService : IMemberService
         return _mapper.Map<IEnumerable<MemberViewModel>>(members);
     }
 
-    public bool CreateMember(CreateMemberViewModel createMember)
+    public Result CreateMember(CreateMemberViewModel createMember)
     {
         var repository = _unitOfWork.GetRepository<Member>();
 
         if (repository.Any(m => m.Email == createMember.Email || m.Phone == createMember.Phone))
-            return false;
+            return Result.Fail("The email or phone number is already in use.");
+
+        var upload = _attachmentService.Upload(AttachmentFolders.Members, createMember.Photo);
+        if (!upload.IsSuccess)
+            return Result.Fail(upload.Error!);
 
         var member = _mapper.Map<Member>(createMember);
+        member.Photo = upload.Value;
         member.HealthRecord.LastUpdate = DateTime.Now;
 
         try
         {
             repository.Add(member);
-            return _unitOfWork.SaveChanges() > 0;
+            if (_unitOfWork.SaveChanges() > 0)
+                return Result.Ok();
         }
         catch (Exception)
         {
-            return false;
+            
         }
+
+        _attachmentService.Delete(upload.Value!, AttachmentFolders.Members);
+        return Result.Fail("The member could not be saved.");
     }
 
     public MemberDetailsViewModel? GetMemberDetails(int memberId)
@@ -117,14 +129,22 @@ public class MemberService : IMemberService
             .Any(b => b.MemberId == memberId && b.Session.EndDate > DateTime.Now);
         if (hasActiveBookings) return false;
 
+        var photo = member.Photo;
+
         try
         {
             _unitOfWork.GetRepository<Member>().Delete(member);
-            return _unitOfWork.SaveChanges() > 0;
+            if (_unitOfWork.SaveChanges() <= 0)
+                return false;
         }
         catch (Exception)
         {
             return false;
         }
+
+        if (!string.IsNullOrEmpty(photo))
+            _attachmentService.Delete(photo, AttachmentFolders.Members);
+
+        return true;
     }
 }

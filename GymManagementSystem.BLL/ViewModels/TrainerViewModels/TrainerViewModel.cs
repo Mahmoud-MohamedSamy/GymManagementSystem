@@ -2,7 +2,6 @@ using GymManagementSystem.DAL.Entities.Enums;
 
 namespace GymManagementSystem.BLL.ViewModels.TrainerViewModels;
 
-// Index list row.
 public class TrainerViewModel
 {
     public int Id { get; set; }
@@ -12,7 +11,6 @@ public class TrainerViewModel
     public Specialties Specialties { get; set; }
 }
 
-// Details page.
 public class TrainerDetailsViewModel : TrainerViewModel
 {
     public string DateOfBirth { get; set; } = null!;
